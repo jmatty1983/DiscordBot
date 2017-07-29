@@ -36,21 +36,35 @@ module.exports = {
               var buildUrl = 'http://www.probuilds.net' + $('a').attr('href');
               request(buildUrl, (err, msg, body) => {
                 $ = cheerio.load(body);
-                var buyStr = '```Shop Trip  1: ';
+                var buildStr = '```\n';
+                var kdaStr = $('.summoner.green + td + td').text().replace(/\s/g,'');
+                buildStr += '__________Build from: ' + $('a.green').text() + ' KDA: ' + kdaStr + '__________\n';
+                buildStr += 'Shop Trip  1: ';
                 var shopTrip = 1;
-
-                var items = $('.buy-order').children('li').each((i, ele) => {
+                //Scrape item buy order.
+                $('.buy-order').children('li').each((i, ele) => {
                   if ($(ele).attr('class') === 'left arrow') {
-                    buyStr = buyStr.slice(0, -4);
-                    buyStr += `\nShop Trip ${(shopTrip += 1).toString().length === 1 ? ' ' + shopTrip : shopTrip}: `
+                    buildStr = buildStr.slice(0, -4);
+                    buildStr += `\nShop Trip ${(shopTrip += 1).toString().length === 1 ? ' ' + shopTrip : shopTrip}: `
                   } else {
-                    buyStr += $(ele).children('div').children('img').attr('alt') + ' -> ';
+                    buildStr += $(ele).children('div').children('img').attr('alt') + ' -> ';
                   }
                 });
-                buyStr = buyStr.slice(0, -4);
-                buyStr += '```';
 
-                message.channel.send(`A ${champName} build can be found at: ${buildUrl}\n\n${buyStr}`);
+                //scrape rune info
+                buildStr = buildStr.slice(0, -4) + '\n\n__________Runes:__________\n';
+                $('.rune-info > ul > li').each((i, ele) => {
+                  buildStr += $(ele).text().replace('+ ', '') + '\n';
+                });
+
+                //scrape masteries
+                buildStr += '\n\n__________Masteries:__________\n';
+                $('.treetitle').each((i, ele) => {
+                  buildStr += $(ele).text() + '\n';
+                });
+                buildStr += '```';
+
+                message.channel.send(`A ${champName} build can be found at: ${buildUrl}\n\n${buildStr}`);
               });
             });
           }
