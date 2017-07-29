@@ -1,6 +1,6 @@
 module.exports = {
   message: "kick",
-  run: function(args, message, client) {
+  run: (args, message, client) => {
     if (!message.member.roles.some(r => ["Administrator", "Moderator"].includes(r.name)) )
       return message.reply("Sorry, you don't have permissions to use this!");
 

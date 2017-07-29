@@ -1,7 +1,6 @@
 const Discord = require("discord.js");
 const config = require("./config.js");
 const commands = require("./commands");
-console.log(commands);
 
 const client = new Discord.Client();
 
@@ -30,7 +29,7 @@ client.on("message", async message => {
   commands.forEach(function(cmdGroup){
     cmdGroup.forEach(function(cmd) {
         if (cmd.message === command) {
-          cmd.run(args, message, client);
+          cmd.run(args, message, client, config);
         }
     });
   });
