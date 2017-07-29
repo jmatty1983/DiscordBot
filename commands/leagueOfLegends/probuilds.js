@@ -58,7 +58,7 @@ module.exports = {
                 });
 
                 //scrape masteries
-                buildStr += '\n\n__________Masteries:__________\n';
+                buildStr += '\n__________Masteries:__________\n';
                 $('.treetitle').each((i, ele) => {
                   buildStr += $(ele).text() + '\n';
                 });
