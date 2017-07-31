@@ -1,5 +1,5 @@
-var request = require('async-request');
-var cheerio = require('cheerio');
+const request = require('async-request');
+const cheerio = require('cheerio');
 
 module.exports = {
   message: "probuilds",
@@ -31,21 +31,21 @@ module.exports = {
 };
 
 async function getRiotChampInfo(name, apiKey) {
-  var url = `https://na1.api.riotgames.com/lol/static-data/v3/champions?locale=en_US&dataById=false&api_key=${apiKey}`
-  var apiRes = await request(url);
+  const url = `https://na1.api.riotgames.com/lol/static-data/v3/champions?locale=en_US&dataById=false&api_key=${apiKey}`
+  const apiRes = await request(url);
 
   if (apiRes.statusCode === 503) {
     return 'Unable to retrieve champion information. Riot static API service is down. Womp. Womp.';
   }
 
-  var body = apiRes.body;
-  var ret = {
+  const body = apiRes.body;
+  let ret = {
     id: null,
     name: null
   }
 
   for(var champData in body) {
-    var champ = body[champData];
+    let champ = body[champData];
 
     champ.name = champ.name.toLowerCase();
     if (champ.name === name) {
@@ -59,18 +59,18 @@ async function getRiotChampInfo(name, apiKey) {
 }
 
 async function getProBuildGame(champ, games = 20) {
-  var url = `http://www.probuilds.net/ajax/games?limit=${games}&sort=gameDate-desc&championId=${champ.id}&olderThan=0`;
-  var body = JSON.parse(await request(url).body);
+  const url = `http://www.probuilds.net/ajax/games?limit=${games}&sort=gameDate-desc&championId=${champ.id}&olderThan=0`;
+  const body = JSON.parse(await request(url).body);
 
   return getHighestGold(body);
 }
 
 function getHighestGold(body) {
-  var mostGold = 0;
-  var gameIndex = 0;
+  let mostGold = 0;
+  let gameIndex = 0;
   body.forEach((game, i) => {
-    var $ = cheerio.load(game);
-    var gold = Number($('._gold').text().slice(0, -1));
+    const $ = cheerio.load(game);
+    let gold = Number($('._gold').text().slice(0, -1));
     if (gold > mostGold) {
       mostGold = gold;
       gameIndex = i;
@@ -81,15 +81,15 @@ function getHighestGold(body) {
 }
 
 async function getProBuildsBuild(game) {
-  var $ = cheerio.load(game);
-  var url = 'http://www.probuilds.net' + $('a').attr('href');
+  let $ = cheerio.load(game);
+  const url = 'http://www.probuilds.net' + $('a').attr('href');
 
   $ = cheerio.load(await request(url).body);
-  var str = '```\n';
-  var kdaStr = $('.summoner.green + td + td').text().replace(/\s/g,'');
+  let str = '```\n';
+  let kdaStr = $('.summoner.green + td + td').text().replace(/\s/g,'');
   str += '__________Build from: ' + $('a.green').text() + ' KDA: ' + kdaStr + '__________\n';
   str += 'Shop Trip  1: ';
-  var shopTrip = 1;
+  let shopTrip = 1;
   //Scrape item buy order.
   $('.buy-order').children('li').each((i, ele) => {
     if ($(ele).attr('class') === 'left arrow') {
@@ -115,6 +115,6 @@ async function getProBuildsBuild(game) {
 
   return {
     url,
-    str: str
+    str
   };
 }
